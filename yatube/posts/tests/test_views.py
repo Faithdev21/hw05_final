@@ -257,17 +257,16 @@ class FollowTests(TestCase):
                 user=self.subscriber, author=self.following).exists()
         )
 
-
-def test_posts_visibility_for_subscribers(self):
-    Follow.objects.create(
-        user=self.subscriber,
-        author=self.following,
-    )
-    response = self.client_subscriber.get(
-        reverse('posts:follow_index')
-    )
-    self.assertIn(self.post.text, response.context.get('page_obj')[0].text)
-    response = self.client_following.get(
-        reverse('posts:follow_index')
-    )
-    self.assertNotIn(self.post, response.context.get('page_obj'))
+    def test_posts_visibility_for_subscribers(self):
+        Follow.objects.create(
+            user=self.subscriber,
+            author=self.following,
+        )
+        response = self.client_subscriber.get(
+            reverse('posts:follow_index')
+        )
+        self.assertIn(self.post.text, response.context.get('page_obj')[0].text)
+        response = self.client_following.get(
+            reverse('posts:follow_index')
+        )
+        self.assertNotIn(self.post, response.context.get('page_obj'))
