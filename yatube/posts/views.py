@@ -1,4 +1,3 @@
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
@@ -7,8 +6,10 @@ from .forms import CommentForm, PostForm
 from .models import Follow, Group, Post, User
 from .utils import paginator_func
 
+SAVE_GENERATED_PAGE_FOR = 20
 
-@cache_page(20)
+
+@cache_page(SAVE_GENERATED_PAGE_FOR)
 def index(request):
     template = "posts/index.html"
     posts = Post.objects.select_related("author", "group")
@@ -49,11 +50,9 @@ def post_detail(request, post_id):
     template = "posts/post_detail.html"
     form = CommentForm(request.POST or None)
     post = get_object_or_404(Post, pk=post_id)
-    comments = post.comments.all()
     context = {
         "post": post,
         "form": form,
-        "comments": comments
     }
     return render(request, template, context)
 
@@ -120,15 +119,14 @@ def follow_index(request):
 @login_required()
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
-    if request.user == author:
-        messages.error(request, 'Подписать на себя невозможно')
-        return redirect('posts:profile', author)
-    Follow.objects.get_or_create(user=request.user, author=author)
+    if request.user != author:
+        Follow.objects.get_or_create(user=request.user, author=author)
     return redirect('posts:profile', author)
 
 
 @login_required()
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
-    Follow.objects.get(user=request.user, author=author).delete()
+    if request.user != author:
+        Follow.objects.get(user=request.user, author=author).delete()
     return redirect('posts:profile', author)

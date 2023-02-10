@@ -69,7 +69,7 @@ class Comment(models.Model):
     )
     created = models.DateTimeField(
         'Дата публикации',
-        auto_now_add=True,)
+        auto_now_add=True, )
 
     def __str__(self):
         return self.text
@@ -89,3 +89,13 @@ class Follow(models.Model):
         related_name='following',
         on_delete=models.CASCADE
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'], name='unique_followers'
+            )
+        ]
+
+    def __str__(self):
+        return self.user
