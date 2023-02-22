@@ -94,6 +94,10 @@ class Follow(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'author'], name='unique_followers'
+            ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('author')),
+                name='follow_user_author_check'
             )
         ]
 

@@ -25,7 +25,6 @@ class PostCreateFormTest(TestCase):
             slug=const.SLUG,
             description=const.DESCRIPTION,
         )
-
         cls.image = const.IMAGE
 
     def setUp(self):

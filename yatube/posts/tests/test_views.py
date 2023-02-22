@@ -235,7 +235,7 @@ class FollowTests(TestCase):
         self.client_subscriber.get(
             reverse(
                 'posts:profile_follow',
-                kwargs={'username': self.post.author.username}
+                kwargs={'username': self.following}
             ))
         self.assertTrue(
             Follow.objects.filter(
